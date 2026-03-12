@@ -5,7 +5,11 @@
  * @returns {Boolean}
  */
 export function isPathMatch(pattern: string, path: string): boolean {
-  const regexPattern = pattern.replace(/\//g, '\\/').replace(/\*\*/g, '.*').replace(/\*/g, '[^\\/]*')
+  // Escape all regex special chars first, then restore our wildcards
+  const regexPattern = pattern
+    .replace(/[.+?^${}()|[\]\\]/g, '\\$&')  // escape all special regex chars (including backslash)
+    .replace(/\\\*\\\*/g, '.*')              // restore ** -> .*
+    .replace(/\\\*/g, '[^\\/]*')             // restore * -> [^\/]*
   const regex = new RegExp(`^${regexPattern}$`)
   return regex.test(path)
 }
